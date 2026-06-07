@@ -1,5 +1,22 @@
 import random
 
+city_prefixes = [
+    "North", "West", "East", "South",
+    "Stone", "River", "High", "Old",
+    "Red", "White", "Iron", "Green"
+]
+
+city_suffixes = [
+    "ford", "helm", "hold", "wick",
+    "bridge", "fall", "watch", "keep",
+    "ton", "burg", "haven", "rest"
+]
+
+def generate_city_name():
+    prefix = random.choice(city_prefixes)
+    suffix = random.choice(city_suffixes)
+
+    return prefix + suffix
 
 WATER_BIOMES = ["water", "river"]
 
@@ -67,17 +84,39 @@ def generate_cities(world, count=8):
             if tile.biome in ["water", "river", "city"]:
                 continue
 
-            if not is_near_water(world, x, y):
-                continue
+            # if not is_near_water(world, x, y):
+            #     continue
 
             score = get_city_score(tile)
 
             if score <= 0:
                 continue
 
+            near_water = is_near_water(world, x, y)
+
+            if not near_water and random.random() > 0.20:
+                continue
+
+            if near_water:
+                score += 3
+
+            
+
             # Горные поселения редкие.
             if tile.biome == "mountain" and random.random() > 0.12:
                 continue
+
+            # candidates.append((score, x, y))
+
+            center_x = world.width / 2
+            center_y = world.height / 2
+
+            distance_from_center = distance(
+                (x, y),
+                (center_x, center_y)
+            )
+
+            score += distance_from_center * 0.03
 
             candidates.append((score, x, y))
 
@@ -105,6 +144,7 @@ def generate_cities(world, count=8):
         tile.biome = "city"
 
         world.cities.append({
+            "name": generate_city_name(),
             "x": x,
             "y": y,
             "score": score

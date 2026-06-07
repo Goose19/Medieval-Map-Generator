@@ -5,6 +5,8 @@ from generator.terrain import generate_terrain
 from generator.renderer import print_world, print_layer
 from generator.rivers import generate_rivers
 from generator.cities import generate_cities
+from generator.roads import connect_cities_with_roads
+from generator.kingdoms import generate_kingdoms
 
 
 def generate_command(args):
@@ -20,11 +22,37 @@ def generate_command(args):
 
 	generate_cities(world, count=args.cities)
 
+	generate_kingdoms(world, count=3)
+
+	connect_cities_with_roads(world)
+
 	if args.mode == "biome":
 		print_world(world)
 
 	else:
 		print_layer(world, args.mode)
+
+	if args.show_kingdoms:
+		print()
+		print("kingdoms:")
+
+		for kingdom in world.kingdoms:
+			print(f"- {kingdom.name}")
+			print(
+				f" Capital: {kingdom.capital['name']} "
+				f"({kingdom.capital['x']}, {kingdom.capital['y']})"
+			)
+
+			print(f" Territory size: {len(kingdom.territory)} tiles")
+
+			print(" cities:")
+
+			for city in kingdom.cities:
+				print(
+					f" - {city['name']} "
+					f"({city['x']}, {city['y']})"
+				)
+
 
 
 def main():
@@ -82,6 +110,12 @@ def main():
 		type=int,
 		default=8,
 		help="Number of cities"
+		)
+
+	generate_parser.add_argument(
+		"--show-kingdoms",
+		action="store_true",
+		help="Show kingdoms information"
 		)
 
 	args = parser.parse_args()

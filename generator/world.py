@@ -5,5 +5,12 @@ class World:
 		self.seed = seed
 
 		self.tiles = []
+
 		self.rivers = []
 		self.cities = []
+		self.roads = []
+
+		self.kingdoms = []
+		self.regions = []
+
+		self.history = []

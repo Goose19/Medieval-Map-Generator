@@ -1,6 +1,18 @@
 from models.tile import Tile
 from generator.noise import generate_height, generate_moisture, generate_temperature
 
+def clamp(value, min_value=0.0, max_value=1.0):
+    return max(min_value, min(max_value, value))
+
+def apply_latitude_temperature(y, world_height, noise_temperature):
+    latitude = y / max(1, world_height - 1)
+
+    latitude_temperature = latitude
+
+    temperature = latitude_temperature * 0.60 + noise_temperature * 0.40
+
+    return clamp(temperature)
+
 def resolve_biome(height, moisture, temperature):
     if height < 0.38:
         return "water"
@@ -14,9 +26,13 @@ def resolve_biome(height, moisture, temperature):
         return "taiga"
 
     if temperature > 0.62:
-        if moisture < 0.4:
+        if moisture < 0.35:
             return "desert"
-        return "jungle"
+        
+        if moisture > 0.70:
+            return "jungle"
+
+        return "plains"
 
     if moisture < 0.35:
         return "dry_plains"
@@ -52,12 +68,18 @@ def generate_terrain(world):
                 world.seed
             )
 
-            temperature = generate_temperature(
+            noise_temperature = generate_temperature(
                 x,
                 y,
                 temperature_scale,
                 world.seed
-                )
+            )
+
+            temperature = apply_latitude_temperature(
+                y,
+                world.height,
+                noise_temperature
+            )
 
             biome = resolve_biome(
                 height,

@@ -1,15 +1,32 @@
 BIOME_SYMBOLS = {
+	"deep_water": "≈",
 	"water": "~",
-	"plains": ".",
-	"dry_plains": ",",
+	"beach": ".",
+
+	"plains": ",",
+	"dry_plains": ";",
 	"forest": "F",
-	"mountain": "^",
-	"tundra": "t",
-	"taiga": "T",
-	"desert": "D",
+
 	"jungle": "J",
+	"tundra": "_",
+	"taiga": "T",
+
+	"swamp": "S",
+
+	"hills": "n",
+	"cold_hills": "N",
+	"forest_hills": "H",
+
+	"mountain": "^",
+	"green_mountain": "A",
+	"snow_mountain": "M",
+
+	"desert": "D",
+
 	"river": "#",
-	"city": "C"
+	"city": "C",
+	"road": "=",
+	"bridge": "+"
 }
 
 def render_ascii(world):

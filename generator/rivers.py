@@ -16,7 +16,7 @@ def get_neighbors(world, x, y):
 
     return neighbors
 
-def find_sources(world, min_height=0.58):
+def find_sources(world, min_height=0.60):
     sources = []
 
     for y in range(world.height):
@@ -40,8 +40,23 @@ def choose_next_tile(world, x, y, visited):
 
         neighbor = world.tiles[ny][nx]
 
-        if neighbor.height <= current.height + 0.01:
-            candidates.append((neighbor.height,nx,ny))
+        if neighbor.biome == "mountain":
+            continue
+
+        heightdiff = current.height - neighbor.height
+
+        if heightdiff >= -0.015:
+            score = neighbor.height
+
+            score -= heightdiff * 0.35
+
+            if nx != x and ny != y:
+                score += 0.01
+
+            candidates.append((score, nx, ny))
+
+        # if neighbor.height <= current.height + 0.01:
+        #     candidates.append((neighbor.height,nx,ny))
 
     if not candidates:
         return None
@@ -94,7 +109,8 @@ def carve_river(world, start_x, start_y, max_length=300):
     for rx, ry in path:
         tile = world.tiles[ry][rx]
 
-        if tile.biome != "water" and tile.biome != "mountain":
+        # if tile.biome != "water" and tile.biome != "mountain":
+        if tile.biome != "water":
             tile.biome = "river"
 
     return path

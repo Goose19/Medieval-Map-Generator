@@ -12,11 +12,52 @@ kingdom_suffixes = [
 	"Principality", "Crownland"
 ]
 
-def generate_kingdom_name():
-	prefix = random.choice(kingdom_prefixes)
-	suffix = random.choice(kingdom_suffixes)
+state_types = [
+	"kingdom", "duchy", "empire", "republic", "free_city"
+]
 
-	return prefix + " " + suffix
+def choose_state_type(capital, world):
+	score = capital["score"]
+
+	if score >= 80 and world.width * world.height >= 2400:
+		return "empire"
+	
+	if score >= 65:
+		return random.choice(["kingdom", "republic"])
+
+	if score >= 45:
+		return random.choice(["duchy", "kingdom"])
+	
+	if len(world.cities) <= 4:
+		return "free_city"
+	
+	return random.choice(["duchy", "free_city"])
+
+# state_types = [
+# 	"kingdom", "empire", "republic", "principality",
+# 	"duchy", "confederation"
+# ]
+
+def generate_kingdom_name(state_type):
+	prefix = random.choice(kingdom_prefixes)
+
+	suffixes_by_type = {
+		"kingdom": ["Kingdom", "Realm", "Crownland"],
+		"duchy": ["Duchy", "March", "Principality"],
+		"republic": ["Republic", "League", "Commonwealth"],
+		"empire": ["Empire", "Imperium"],
+		"free_city": ["Free City", "City-State"]
+	}
+
+	suffix = random.choice(suffixes_by_type.get(state_type, ["State"]))
+
+	return f"{prefix} {suffix}"
+
+# def generate_kingdom_name():
+# 	prefix = random.choice(kingdom_prefixes)
+# 	suffix = random.choice(kingdom_suffixes)
+
+# 	return prefix + " " + suffix
 
 def distance(a, b):
 	ax, ay = a
@@ -84,9 +125,12 @@ def generate_kingdoms(world, count=3):
 	# 	capitals.append(city)
 
 	for capital in capitals:
+		state_type = choose_state_type(capital, world)
+
 		kingdom = Kingdom(
-			name = generate_kingdom_name(),
-			capital = capital
+			name = generate_kingdom_name(state_type),
+			capital = capital,
+			state_type = state_type
 			)
 
 		kingdom.cities.append(capital)

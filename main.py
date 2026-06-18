@@ -38,6 +38,7 @@ def generate_command(args):
 
 		for kingdom in world.kingdoms:
 			print(f"- {kingdom.name}")
+			print(f" State type: {kingdom.state_type}")
 			print(
 				f" Capital: {kingdom.capital['name']} "
 				f"({kingdom.capital['x']}, {kingdom.capital['y']})"

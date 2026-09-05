@@ -6,7 +6,11 @@ from generator.renderer import print_world, print_layer
 from generator.rivers import generate_rivers
 from generator.cities import generate_cities
 from generator.roads import connect_cities_with_roads
-from generator.kingdoms import generate_kingdoms
+from generator.population import generate_population
+
+from generator.kingdoms import generate_kingdoms, get_capital_score
+
+from generator.diplomacy import generate_relations
 
 
 def generate_command(args):
@@ -24,6 +28,10 @@ def generate_command(args):
 
 	generate_kingdoms(world, count=3)
 
+	generate_population(world)
+
+	generate_relations(world)
+
 	connect_cities_with_roads(world)
 
 	if args.mode == "biome":
@@ -39,21 +47,50 @@ def generate_command(args):
 		for kingdom in world.kingdoms:
 			print(f"- {kingdom.name}")
 			print(f" State type: {kingdom.state_type}")
+			print(f" Culture: {kingdom.culture}")
 			print(
 				f" Capital: {kingdom.capital['name']} "
 				f"({kingdom.capital['x']}, {kingdom.capital['y']})"
 			)
 
+			print(f" Capital score: {get_capital_score(world, kingdom.capital, kingdom.cities):.2f}")
+
 			print(f" Territory size: {len(kingdom.territory)} tiles")
+
+			print(f" Population: {kingdom.population}")
+			print(f" Urban population: {kingdom.urban_population}")
+			print(f" Rural population: {kingdom.rural_population}")
+
+			print(" Neighbors:")
+
+			if kingdom.neighbors:
+				for neighbor in kingdom.neighbors:
+					border_length = kingdom.border_lengths.get(neighbor.name, 0)
+					print(f" - {neighbor.name} — border: {border_length} tiles")
+			
+			else:
+				print(" - none")
+
+			# for neighbor in kingdom.neighbors:
+			# 	print(f" - {neighbor.name}")
+
+			print(" Relations:")
+
+			if kingdom.relations:
+				for kingdom_name, relation in kingdom.relations.items():
+					print(f" - {kingdom_name}: {relation['score']:+d} ({relation['status']})")
+			
+			else:
+				print(" - none")
 
 			print(" cities:")
 
 			for city in kingdom.cities:
-				print(
-					f" - {city['name']} "
-					f"({city['x']}, {city['y']})"
-				)
-
+				if city is kingdom.capital:
+					capital_mark = " (capital)"
+				else:
+					capital_mark = ""
+				print(f" - {city['name']} ({city['x']}, {city['y']}) — population: {city.get('population', 0):,}{capital_mark}")
 
 
 def main():

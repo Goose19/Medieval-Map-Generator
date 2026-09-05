@@ -1,22 +1,24 @@
 import random
 
-city_prefixes = [
-    "North", "West", "East", "South",
-    "Stone", "River", "High", "Old",
-    "Red", "White", "Iron", "Green"
-]
+from generator.names import NameGenerator
 
-city_suffixes = [
-    "ford", "helm", "hold", "wick",
-    "bridge", "fall", "watch", "keep",
-    "ton", "burg", "haven", "rest"
-]
+# city_prefixes = [
+#     "North", "West", "East", "South",
+#     "Stone", "River", "High", "Old",
+#     "Red", "White", "Iron", "Green"
+# ]
 
-def generate_city_name():
-    prefix = random.choice(city_prefixes)
-    suffix = random.choice(city_suffixes)
+# city_suffixes = [
+#     "ford", "helm", "hold", "wick",
+#     "bridge", "fall", "watch", "keep",
+#     "ton", "burg", "haven", "rest"
+# ]
 
-    return prefix + suffix
+# def generate_city_name():
+#     prefix = random.choice(city_prefixes)
+#     suffix = random.choice(city_suffixes)
+
+#     return prefix + suffix
 
 WATER_BIOMES = ["water", "river"]
 
@@ -74,6 +76,7 @@ def get_city_score(tile):
 
 def generate_cities(world, count=8):
     random.seed(world.seed + 3000)
+    name_generator = NameGenerator(world.seed)
 
     candidates = []
 
@@ -141,13 +144,15 @@ def generate_cities(world, count=8):
             continue
 
         tile = world.tiles[y][x]
+        original_biome = tile.biome
         tile.biome = "city"
 
         world.cities.append({
-            "name": generate_city_name(),
+            "name": name_generator.generate_city_name(),
             "x": x,
             "y": y,
-            "score": score
+            "score": score,
+            "biome": original_biome
         })
 
         created += 1

@@ -373,12 +373,17 @@ def generate_kingdoms(world, count=3):
 
 	clusters = cluster_cities(world.cities, count)
 
+	kingdom_number = 1
+
 	for cluster in clusters:
 		capital = choose_capital(world, cluster)
 		culture = choose_culture(world, capital)
 		state_type = choose_state_type(capital, world, culture)
 
+		kingdom_id = "kingdom_" + str(kingdom_number)
+
 		kingdom = Kingdom(
+			kingdom_id = kingdom_id,
 			name=name_generator.generate_state_name(state_type),
 			capital=capital,
 			state_type=state_type,
@@ -387,6 +392,8 @@ def generate_kingdoms(world, count=3):
 
 		kingdom.cities = list(cluster)
 		world.kingdoms.append(kingdom)
+
+		kingdom_number += 1
 
 	assign_territories(world)
 	determine_neighbors(world)
@@ -402,7 +409,7 @@ def assign_territories(world):
 		for x in range(world.width):
 			tile = world.tiles[y][x]
 
-			if tile.biome in ["water", "river"]:
+			if tile.biome in ["water", "deep_water"]:
 				continue
 
 			nearest_kingdom = None
@@ -419,6 +426,7 @@ def assign_territories(world):
 
 			if nearest_kingdom is not None:
 				nearest_kingdom.territory.append((x, y))
+				tile.kingdom_id = nearest_kingdom.id
 
 def determine_neighbors(world):
 	territory_owner = {}
@@ -476,3 +484,52 @@ def determine_neighbors(world):
 				neighbor_kingdom.border_lengths[current_kingdom.name] += 1
 
 	return world
+
+def detect_political_borders(world):
+	for row in world.tiles:
+		for tile in row:
+			tile.region_border = False
+			tile.kingdom_border = False
+	
+	directions = [
+		(-1, 0),
+		(1, 0),
+		(0, -1),
+		(0, 1),
+	]
+
+	for y in range(world.height):
+		for x in range(world.width):
+			tile = world.tiles[y][x]
+
+			if tile.kingdom_id is None:
+				continue
+			
+			for direction in directions:
+				dx = direction[0]
+				dy = direction[1]
+
+				nx = x + dx
+				ny = y + dy
+
+				if nx < 0:
+					continue
+				
+				if ny < 0:
+					continue
+				
+				if nx >= world.width:
+					continue
+
+				if ny >= world.height:
+					continue
+				
+				neighbor_tile = world.tiles[ny][nx]
+
+				if tile.kingdom_id != neighbor_tile.kingdom_id:
+					tile.kingdom_border = True
+					continue
+				
+				if tile.region_id != neighbor_tile.region_id:
+					tile.region_border = True
+					

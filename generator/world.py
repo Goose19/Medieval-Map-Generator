@@ -11,6 +11,12 @@ class World:
 		self.roads = []
 
 		self.kingdoms = []
+		self.provinces = []
 		self.regions = []
+
+		self.water_bodies = []
+		self.seas = []
+		self.lakes = []
+		self.bays = []
 
 		self.history = []

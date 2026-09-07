@@ -87,6 +87,30 @@ LAKE_SUFFIXES = [
 	"Mere"
 ]
 
+SEA_PREFIXES = [
+	"Azure", "Silver", "Grey", "Black",
+	"White", "Emerald", "Storm", "Cold",
+	"Shattered", "Silent", "Sapphire", "Iron"
+]
+
+SEA_SUFFIXES = [
+	"Sea",
+	"Waters",
+	"Expanse"
+]
+
+
+BAY_PREFIXES = [
+	"Silver", "Black", "White", "Red",
+	"Green", "Grey", "Storm", "Wolf",
+	"Raven", "Moon", "King", "Deep"
+]
+
+BAY_SUFFIXES = [
+	"Bay",
+	"Gulf",
+	"Bight"
+]
 
 MOUNTAIN_PREFIXES = [
 	"Stone", "Iron", "Black", "White",
@@ -121,6 +145,24 @@ REGION_SUFFIXES = [
 	"heights"
 ]
 
+PROVINCE_PREFIXES = [
+	"North", "South", "East", "West",
+	"Upper", "Lower", "Old", "High",
+	"Green", "Grey", "Black", "White",
+	"River", "Stone", "Iron", "Oak"
+]
+
+PROVINCE_SUFFIXES = [
+	"march",
+	"shire",
+	"vale",
+	"field",
+	"wood",
+	"land",
+	"dale",
+	"reach"
+]
+
 
 class NameGenerator:
 	def __init__(self, seed):
@@ -130,6 +172,9 @@ class NameGenerator:
 		self.lake_rng = random.Random(seed + 13000)
 		self.mountain_rng = random.Random(seed + 14000)
 		self.region_rng = random.Random(seed + 15000)
+		self.province_rng = random.Random(seed + 16000)
+		self.sea_rng = random.Random(seed + 17000)
+		self.bay_rng = random.Random(seed + 18000)
 
 		self.used_city_names = set()
 		self.used_state_names = set()
@@ -137,6 +182,10 @@ class NameGenerator:
 		self.used_lake_names = set()
 		self.used_mountain_names = set()
 		self.used_region_names = set()
+		self.used_province_names = set()
+		self.used_sea_names = set()
+		self.used_bay_names = set()
+
 
 	def generate_unique_name(self, create_name, used_names, attempts=100):
 		for _ in range(attempts):
@@ -198,6 +247,14 @@ class NameGenerator:
 
 		return self.generate_unique_name(create_name, self.used_mountain_names)
 
+	def generate_province_name(self):
+		def create_name():
+			prefix = self.province_rng.choice(PROVINCE_PREFIXES)
+			suffix = self.province_rng.choice(PROVINCE_SUFFIXES)
+			return prefix + suffix
+
+		return self.generate_unique_name(create_name, self.used_province_names)
+
 	def generate_region_name(self):
 		def create_name():
 			prefix = self.region_rng.choice(REGION_PREFIXES)
@@ -205,3 +262,19 @@ class NameGenerator:
 			return prefix + suffix
 
 		return self.generate_unique_name(create_name, self.used_region_names)
+
+	def generate_sea_name(self):
+		def create_name():
+			prefix = self.sea_rng.choice(SEA_PREFIXES)
+			suffix = self.sea_rng.choice(SEA_SUFFIXES)
+			return f"{prefix} {suffix}"
+
+		return self.generate_unique_name(create_name, self.used_sea_names)
+
+	def generate_bay_name(self):
+		def create_name():
+			prefix = self.bay_rng.choice(BAY_PREFIXES)
+			suffix = self.bay_rng.choice(BAY_SUFFIXES)
+			return f"{prefix} {suffix}"
+
+		return self.generate_unique_name(create_name, self.used_bay_names)

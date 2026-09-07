@@ -1,5 +1,6 @@
 class Kingdom:
-	def __init__(self, name, capital=None, state_type="kingdom", culture="lowland"):
+	def __init__(self, kingdom_id, name, capital=None, state_type="kingdom", culture="lowland"):
+		self.id = kingdom_id
 		self.name = name
 		self.capital = capital
 		self.state_type = state_type
@@ -7,6 +8,9 @@ class Kingdom:
 
 		self.cities = []
 		self.territory = []
+		
+		self.provinces = []
+		self.regions = []
 
 		self.neighbors = []
 		self.border_lengths = {}
